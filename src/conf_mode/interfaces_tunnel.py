@@ -88,6 +88,22 @@ def verify(tunnel):
             raise ConfigError('Tunnel used for NHRP, it can not be deleted!')
 
         return None
+
+    # Special handling for kernel-managed Tailscale interfaces. We only allow
+    # generic interface options (address, MTU, VRF, mirror/redirect, etc.)
+    # and do not manage tunnel encapsulation or endpoints for these devices.
+    if tunnel.get('ifname', '').startswith('tailscale'):
+        verify_mtu_ipv6(tunnel)
+        verify_address(tunnel)
+        verify_vrf(tunnel)
+        verify_bond_bridge_member(tunnel)
+        verify_mirror_redirect(tunnel)
+
+        if 'source_interface' in tunnel:
+            verify_source_interface(tunnel)
+
+        return None
+
     if 'nhrp' in tunnel:
         if 'address' in tunnel:
             address_list = dict_search('address', tunnel)
@@ -201,6 +217,20 @@ def generate(tunnel):
 
 def apply(tunnel):
     interface = tunnel['ifname']
+
+    # For Tailscale interfaces, do not create or delete the kernel device and
+    # do not attempt to program tunnel encapsulation options. Only apply
+    # generic interface settings via the base Interface class.
+    if interface.startswith('tailscale'):
+        if 'deleted' in tunnel:
+            return None
+
+        if interface_exists(interface):
+            tmp = Interface(interface, create=False)
+            tmp.update(tunnel)
+
+        return None
+
     # If a gretap tunnel is already existing we can not "simply" change local or
     # remote addresses. This returns "Operation not supported" by the Kernel.
     # There is no other solution to destroy and recreate the tunnel.

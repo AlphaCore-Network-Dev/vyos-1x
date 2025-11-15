@@ -7,12 +7,16 @@
           <help>Tunnel interface</help>
           <priority>380</priority>
           <constraint>
-            <regex>tun[0-9]+</regex>
+            <regex>(tun|tailscale)[0-9]+</regex>
           </constraint>
-          <constraintErrorMessage>tunnel interface must be named tunN</constraintErrorMessage>
+          <constraintErrorMessage>tunnel interface must be named tunN or tailscaleN</constraintErrorMessage>
           <valueHelp>
             <format>tunN</format>
             <description>Tunnel interface name</description>
+          </valueHelp>
+          <valueHelp>
+            <format>tailscaleN</format>
+            <description>Tailscale interface name</description>
           </valueHelp>
         </properties>
         <children>

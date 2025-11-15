@@ -39,6 +39,8 @@ class TunnelIf(Interface):
         **{
             'section': 'tunnel',
             'prefixes': ['tun', 'tailscale'],
+            # Do not delete kernel-managed tailscale interfaces
+            'eternal': 'tailscale[0-9]+$',
             'bridgeable': True,
         },
     }
