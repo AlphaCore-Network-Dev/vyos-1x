@@ -90,7 +90,7 @@ def filtered_interfaces(ifnames: typing.Union[str, list],
         yield interface
 
 def is_interface_has_mac(interface_name):
-    interface_no_mac = ('tun', 'wg')
+    interface_no_mac = ('tun', 'wg', 'tailscale')
     return not any(interface_name.startswith(prefix) for prefix in interface_no_mac)
 
 def detailed_output(dataset, headers):
