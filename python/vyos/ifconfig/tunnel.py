@@ -38,7 +38,7 @@ class TunnelIf(Interface):
         **Interface.definition,
         **{
             'section': 'tunnel',
-            'prefixes': ['tun',],
+            'prefixes': ['tun', 'tailscale'],
             'bridgeable': True,
         },
     }
